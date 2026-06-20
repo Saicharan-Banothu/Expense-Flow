@@ -23,6 +23,8 @@ interface DashboardMetrics {
   this_month_expenses: number;
   active_categories: number;
   budget_used_percentage: number;
+  total_budget: number;
+  remaining_budget: number;
   expenses_by_category: CategoryExpense[];
   recent_daily_expenses: DailyExpense[];
 }
@@ -83,15 +85,23 @@ export default function Dashboard() {
         <Card className="glass shadow-xl border-t-4 border-t-rose-500 hover:-translate-y-1 transition-transform">
           <CardContent className="p-6">
             <h3 className="tracking-tight text-base font-semibold text-muted-foreground uppercase">Budget Used (Monthly)</h3>
-            <p className={`text-4xl font-black mt-2 ${metrics.budget_used_percentage > 90 ? 'text-rose-500' : ''}`}>
-              {metrics.budget_used_percentage}%
-            </p>
+            <div className="flex items-end gap-2 mt-2">
+              <p className={`text-4xl font-black ${metrics.budget_used_percentage > 90 ? 'text-rose-500' : ''}`}>
+                {metrics.budget_used_percentage}%
+              </p>
+              <p className="text-sm text-muted-foreground font-medium mb-1">
+                (₹{metrics.this_month_expenses.toFixed(2)} / ₹{metrics.total_budget.toFixed(2)})
+              </p>
+            </div>
             <div className="mt-4 h-3 w-full bg-secondary rounded-full overflow-hidden shadow-inner">
               <div 
                 className={`h-full ${metrics.budget_used_percentage > 90 ? 'bg-rose-500' : 'primary-gradient'}`} 
                 style={{ width: `${Math.min(100, metrics.budget_used_percentage)}%` }} 
               />
             </div>
+            <p className="text-sm font-medium mt-3 text-right text-muted-foreground">
+              Remaining: <span className={metrics.remaining_budget < 0 ? 'text-rose-500' : 'text-emerald-500'}>₹{metrics.remaining_budget.toFixed(2)}</span>
+            </p>
           </CardContent>
         </Card>
       </div>

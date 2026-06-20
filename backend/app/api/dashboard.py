@@ -44,8 +44,12 @@ def get_dashboard_metrics(
     ).scalar() or 0.0
 
     budget_used_percentage = 0.0
+    remaining_budget = float(total_monthly_budget) - float(this_month_expenses)
+    
     if total_monthly_budget > 0:
         budget_used_percentage = min(100.0, (this_month_expenses / total_monthly_budget) * 100.0)
+    else:
+        remaining_budget = 0.0
 
     # Expenses by Category (All time or this month, let's do this month for relevance)
     category_expenses_query = db.query(
@@ -82,6 +86,8 @@ def get_dashboard_metrics(
         this_month_expenses=float(this_month_expenses),
         active_categories=active_categories,
         budget_used_percentage=round(budget_used_percentage, 1),
+        total_budget=float(total_monthly_budget),
+        remaining_budget=float(remaining_budget),
         expenses_by_category=expenses_by_category,
         recent_daily_expenses=recent_daily_expenses
     )

@@ -36,7 +36,7 @@ def create_subscription(
         amount=subscription_in.amount,
         billing_cycle=subscription_in.billing_cycle,
         next_billing_date=subscription_in.next_billing_date,
-        is_active=subscription_in.is_active,
+        is_active=1 if subscription_in.is_active else 0,
         user_id=current_user.id,
     )
     db.add(subscription)

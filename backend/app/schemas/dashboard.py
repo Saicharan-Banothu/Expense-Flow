@@ -15,5 +15,7 @@ class DashboardMetrics(BaseModel):
     this_month_expenses: float
     active_categories: int
     budget_used_percentage: float
+    total_budget: float
+    remaining_budget: float
     expenses_by_category: List[CategoryExpense]
     recent_daily_expenses: List[DailyExpense]
