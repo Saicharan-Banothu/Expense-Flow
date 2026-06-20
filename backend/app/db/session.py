@@ -10,7 +10,14 @@ MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "userpassword")
 MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
 MYSQL_DB = os.getenv("MYSQL_DATABASE", "expenseflow")
 
-if os.getenv("USE_SQLITE", "true").lower() == "true":
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URL = DATABASE_URL
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+elif os.getenv("USE_SQLITE", "true").lower() == "true":
     SQLALCHEMY_DATABASE_URL = "sqlite:///./expenseflow.db"
     engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 else:
