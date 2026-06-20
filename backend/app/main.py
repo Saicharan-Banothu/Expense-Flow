@@ -7,6 +7,11 @@ from app.api.budgets import router as budgets_router
 from app.api.subscriptions import router as subscriptions_router
 from app.api.saving_goals import router as saving_goals_router
 from app.api.dashboard import router as dashboard_router
+from app.db.base import Base
+from app.db.session import engine
+
+# Create tables if they don't exist
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="ExpenseFlow AI",
