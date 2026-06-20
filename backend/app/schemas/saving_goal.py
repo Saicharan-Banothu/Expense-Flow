@@ -6,7 +6,7 @@ class SavingGoalBase(BaseModel):
     name: str
     target_amount: float
     current_amount: float = 0.0
-    target_date: Optional[date] = None
+    deadline: Optional[date] = None
 
 class SavingGoalCreate(SavingGoalBase):
     pass
@@ -15,7 +15,7 @@ class SavingGoalUpdate(BaseModel):
     name: Optional[str] = None
     target_amount: Optional[float] = None
     current_amount: Optional[float] = None
-    target_date: Optional[date] = None
+    deadline: Optional[date] = None
 
 class SavingGoalInDBBase(SavingGoalBase):
     id: int

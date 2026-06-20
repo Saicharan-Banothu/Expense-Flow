@@ -12,14 +12,14 @@ interface SavingGoal {
   name: string;
   target_amount: number;
   current_amount: number;
-  target_date: string;
+  deadline: string;
 }
 
 export default function SavingGoals() {
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
-  const [targetDate, setTargetDate] = useState("");
+  const [deadline, setDeadline] = useState("");
 
   const { data: goals, isLoading } = useQuery<SavingGoal[]>({
     queryKey: ["saving_goals"],
@@ -38,7 +38,7 @@ export default function SavingGoals() {
       queryClient.invalidateQueries({ queryKey: ["saving_goals"] });
       setName("");
       setTargetAmount("");
-      setTargetDate("");
+      setDeadline("");
     },
   });
 
@@ -69,7 +69,7 @@ export default function SavingGoals() {
       name,
       target_amount: parseFloat(targetAmount),
       current_amount: 0,
-      target_date: targetDate || null,
+      deadline: deadline || null,
     } as Partial<SavingGoal>);
   };
 
@@ -128,8 +128,8 @@ export default function SavingGoals() {
                 <Input
                   className="text-lg py-6"
                   type="date"
-                  value={targetDate}
-                  onChange={(e) => setTargetDate(e.target.value)}
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
                   disabled={createGoal.isPending}
                 />
               </div>
@@ -164,9 +164,9 @@ export default function SavingGoals() {
                             {isCompleted ? <CheckCircle2 className="h-5 w-5 text-emerald-500" /> : <Target className="h-5 w-5 text-primary" />}
                             {goal.name}
                           </CardTitle>
-                          {goal.target_date && (
+                          {goal.deadline && (
                             <CardDescription className="mt-1 font-medium text-sm">
-                              Target: {goal.target_date}
+                              Target: {goal.deadline}
                             </CardDescription>
                           )}
                         </div>

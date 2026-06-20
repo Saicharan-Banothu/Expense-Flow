@@ -35,7 +35,7 @@ def create_saving_goal(
         name=goal_in.name,
         target_amount=goal_in.target_amount,
         current_amount=goal_in.current_amount,
-        target_date=goal_in.target_date,
+        deadline=goal_in.deadline,
         user_id=current_user.id,
     )
     db.add(goal)
