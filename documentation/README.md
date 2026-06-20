@@ -4,15 +4,17 @@ ExpenseFlow is a modern, premium SaaS web application designed to help users man
 
 ## Tech Stack
 - **Frontend:** React 18, Vite, TypeScript, Tailwind CSS v4, Recharts, Shadcn UI.
-- **Backend:** Python, FastAPI, SQLAlchemy, SQLite (Development) / PostgreSQL (Production).
-- **Authentication:** OAuth2 with JWT (JSON Web Tokens) and Bcrypt hashing.
+- **Backend:** Python, FastAPI, SQLAlchemy, PostgreSQL (Neon).
+- **Authentication:** OAuth2 with JWT (JSON Web Tokens), Google OAuth integration, and Resend for Email Verification.
+- **Deployment:** Vercel (Frontend) and Render (Backend).
 
 ## Key Features
-- **Vibrant Dashboard:** Comprehensive overview with dynamic Pie and Bar charts illustrating spending habits.
-- **Expense Tracking:** Advanced filtering and sorting capabilities to monitor individual transactions.
+- **Vibrant Dashboard:** Comprehensive overview with dynamic Pie and Bar charts illustrating spending habits and budget tracking.
+- **Expense Tracking:** Strict date validations ensuring expenses only happen within the current month.
 - **Budgeting:** Set limits on spending categories and visually track utilization.
-- **Saving Goals:** Track financial milestones with visual progress bars.
-- **Subscription Management:** Keep track of recurring services and upcoming billing dates.
+- **Saving Goals:** Track financial milestones with progressive inputs and date enforcement.
+- **Subscription Management:** Keep track of recurring services and automatically log subscription expenses with current-month validation.
+- **Authentication:** Standard JWT auth mixed with Google OAuth 2.0 flow and verified email checking.
 - **Dark/Light Mode:** Seamless theme toggling with persistent user preferences.
 - **Full Customization:** Users can manage their profile, emails, and passwords directly from the app.
 
@@ -31,6 +33,7 @@ ExpenseFlow/
 │   │   ├── api/          # Route handlers
 │   │   ├── core/         # Security and Configuration
 │   │   ├── models/       # SQLAlchemy Database Models
+│   │   ├── utils/        # Utility helpers (e.g., email sending)
 │   │   └── schemas/      # Pydantic validation schemas
 ├── documentation/        # Project documentation
 ```

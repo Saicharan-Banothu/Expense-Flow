@@ -1,97 +1,24 @@
-# CI/CD Pipeline Guide
+# CI/CD Pipeline
 
-Continuous Integration and Continuous Deployment (CI/CD) ensures that code changes are automatically tested and deployed to production. This guide outlines a standard GitHub Actions pipeline for ExpenseFlow.
+ExpenseFlow takes advantage of fully integrated serverless CI/CD pipelines provided by modern PaaS platforms. There is no need to manually configure GitHub Actions workflows for deployment.
 
-## CI/CD Architecture
-- **Version Control:** GitHub
-- **CI Provider:** GitHub Actions
-- **Testing:** Pytest (Backend) & Vitest/Jest (Frontend)
-- **Deployment Target:** AWS EC2 or Container Registry (Docker)
+## Frontend (Vercel)
+Vercel automatically integrates with the GitHub repository.
 
-## 1. The GitHub Actions Workflow (`.github/workflows/deploy.yml`)
+1. **Commit & Push**: Any push to the `main` branch triggers a new Vercel deployment automatically.
+2. **Build Process**: Vercel executes `npm run build` using Vite.
+3. **Preview Deployments**: Any Pull Request or branch push automatically gets a unique preview URL generated for testing.
+4. **Production**: Merging to `main` seamlessly promotes the build to the live production URL.
 
-Create a YAML file in your repository to define the pipeline.
+## Backend (Render)
+Render continuously monitors the `main` branch.
 
-```yaml
-name: ExpenseFlow CI/CD
+1. **Commit & Push**: Pushing to `main` triggers a Render build.
+2. **Build Process**: Render automatically installs Python dependencies from `requirements.txt`.
+3. **Database Migrations**: When the application boots (`uvicorn app.main:app`), SQLAlchemy `Base.metadata.create_all()` verifies that the database schema is up-to-date and creates any newly added tables directly on the Neon Postgres instance.
+4. **Zero-Downtime Deploys**: Render spins up the new service version and waits for it to become healthy before routing traffic away from the old version.
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-jobs:
-  test-backend:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    - name: Install dependencies
-      run: |
-        cd backend
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
-    - name: Run Pytest
-      run: |
-        cd backend
-        pytest
-
-  build-frontend:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-    - name: Install and Build
-      run: |
-        cd frontend
-        npm install
-        npm run build
-
-  deploy:
-    needs: [test-backend, build-frontend]
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Deploy to Server via SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /var/www/expenseflow
-          git pull origin main
-          
-          # Backend
-          cd backend
-          source venv/bin/activate
-          pip install -r requirements.txt
-          sudo systemctl restart expenseflow-api
-          
-          # Frontend
-          cd ../frontend
-          npm install
-          npm run build
-          sudo cp -r dist/* /var/www/html/
-```
-
-## 2. Secrets Management
-You must configure the following repository secrets in GitHub (`Settings > Secrets and variables > Actions`):
-- `SERVER_HOST`: The IP address of your production server.
-- `SERVER_USER`: The SSH username (e.g., `ubuntu`).
-- `SSH_PRIVATE_KEY`: Your server's SSH private key.
-
-## 3. Pipeline Flow
-1. **Push to Main:** A developer merges code into the `main` branch.
-2. **Automated Testing:** GitHub Actions spins up isolated containers to run unit tests on the backend and build the frontend.
-3. **Deployment Trigger:** If all tests pass, the `deploy` job initiates an SSH connection to the production server.
-4. **Execution:** The server pulls the latest code, installs new dependencies, rebuilds the frontend Vite bundle, and restarts the backend Gunicorn service.
+## Version Control Guidelines
+- Commit logically grouped changes.
+- Ensure all environment variables are correctly mapped in the Render and Vercel dashboards.
+- Never commit `.env` files or API secrets (like Resend keys or Postgres URLs) to the repository.
