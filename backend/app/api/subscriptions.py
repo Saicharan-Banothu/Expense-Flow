@@ -5,7 +5,7 @@ from app.api import deps
 from app.models.budget import Subscription
 from app.models.user import User
 from app.schemas.subscription import Subscription as SubscriptionSchema, SubscriptionCreate, SubscriptionUpdate
-from app.models.expense import Expense
+from app.models.expense import Expense, Category
 from datetime import datetime
 
 router = APIRouter()
@@ -46,13 +46,32 @@ def create_subscription(
     )
     db.add(subscription)
     
+    # Ensure category_id is valid for Expense
+    category_id = subscription_in.category_id if hasattr(subscription_in, 'category_id') and subscription_in.category_id else None
+    if not category_id:
+        uncategorized = db.query(Category).filter(
+            Category.user_id == current_user.id,
+            Category.name == "Uncategorized"
+        ).first()
+        if not uncategorized:
+            uncategorized = Category(
+                name="Uncategorized", 
+                user_id=current_user.id, 
+                icon="help-circle", 
+                color="#94a3b8"
+            )
+            db.add(uncategorized)
+            db.commit()
+            db.refresh(uncategorized)
+        category_id = uncategorized.id
+
     # Automatically log it as an expense for the current month
     expense = Expense(
         amount=subscription_in.amount,
-        description=f"Subscription: {subscription_in.name}",
+        title=f"Subscription: {subscription_in.name}",
         date=subscription_in.next_billing_date,
         user_id=current_user.id,
-        category_id=subscription_in.category_id if hasattr(subscription_in, 'category_id') and subscription_in.category_id else None
+        category_id=category_id
     )
     db.add(expense)
     

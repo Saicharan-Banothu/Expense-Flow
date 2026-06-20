@@ -29,6 +29,7 @@ export default function Subscriptions() {
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [nextBillingDate, setNextBillingDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [categoryId, setCategoryId] = useState("");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const today = new Date();
   const minDate = format(new Date(today.getFullYear(), today.getMonth(), 1), "yyyy-MM-dd");
@@ -59,7 +60,11 @@ export default function Subscriptions() {
       queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       setName("");
       setAmount("");
+      setErrorMsg(null);
     },
+    onError: (error: any) => {
+      setErrorMsg(error.response?.data?.detail || "Failed to add subscription");
+    }
   });
 
   const deleteSubscription = useMutation({
@@ -97,6 +102,11 @@ export default function Subscriptions() {
             <CardTitle>Add Subscription</CardTitle>
           </CardHeader>
           <CardContent>
+            {errorMsg && (
+              <div className="mb-4 p-3 text-sm text-destructive-foreground bg-destructive/90 rounded-md">
+                {errorMsg}
+              </div>
+            )}
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-2">
                 <Input
