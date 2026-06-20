@@ -4,6 +4,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Layout from '@/components/layout/Layout';
 import Login from '@/features/auth/Login';
 import Register from '@/features/auth/Register';
+import VerifyEmail from '@/features/auth/VerifyEmail';
 import Dashboard from '@/features/dashboard/Dashboard';
 import Categories from '@/features/categories/Categories';
 import Expenses from '@/features/expenses/Expenses';
@@ -20,6 +21,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>

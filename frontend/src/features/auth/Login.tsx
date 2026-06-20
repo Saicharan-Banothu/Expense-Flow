@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { GoogleLogin as GoogleAuthLogin, CredentialResponse } from "@react-oauth/google";
 import { api } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,18 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    setError(null);
+    try {
+      if (!credentialResponse.credential) return;
+      const response = await api.post("/auth/google", { token: credentialResponse.credential });
+      await login(response.data.access_token);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError("Google Login failed. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-md">
@@ -105,6 +118,24 @@ export default function Login() {
             <Button className="w-full" type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Logging in..." : "Login"}
             </Button>
+            
+            <div className="relative w-full">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="flex justify-center w-full">
+              <GoogleAuthLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => setError("Google Login was unsuccessful")}
+                useOneTap
+              />
+            </div>
+
             <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
               <Link to="/register" className="font-medium text-primary hover:underline">

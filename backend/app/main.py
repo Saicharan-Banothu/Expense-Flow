@@ -13,6 +13,19 @@ from app.db.session import engine
 # Create tables if they don't exist
 Base.metadata.create_all(bind=engine)
 
+# Safe migration for new columns
+from sqlalchemy import text
+try:
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE"))
+except Exception as e:
+    # Fallback for SQLite which doesn't support IF NOT EXISTS
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT 0"))
+    except Exception:
+        pass
+
 app = FastAPI(
     title="ExpenseFlow AI",
     description="Student Expense Tracker SaaS API",
