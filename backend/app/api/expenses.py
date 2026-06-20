@@ -31,6 +31,12 @@ def create_expense(
     """
     Create new expense.
     """
+    from datetime import datetime
+
+    today = datetime.today().date()
+    if expense_in.date.year != today.year or expense_in.date.month != today.month:
+        raise HTTPException(status_code=400, detail="Expense date must be within the current month and year.")
+
     category_id = expense_in.category_id
     if not category_id:
         uncategorized = db.query(Category).filter(

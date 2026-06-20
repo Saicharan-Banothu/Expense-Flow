@@ -31,6 +31,11 @@ def create_saving_goal(
     """
     Create new saving goal.
     """
+    from datetime import datetime
+
+    if goal_in.deadline and goal_in.deadline < datetime.today().date():
+        raise HTTPException(status_code=400, detail="Goal target date cannot be in the past.")
+
     goal = SavingGoal(
         name=goal_in.name,
         target_amount=goal_in.target_amount,

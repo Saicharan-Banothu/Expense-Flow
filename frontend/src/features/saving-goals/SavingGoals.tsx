@@ -128,6 +128,7 @@ export default function SavingGoals() {
                 <Input
                   className="text-lg py-6"
                   type="date"
+                  min={new Date().toISOString().split("T")[0]}
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   disabled={createGoal.isPending}

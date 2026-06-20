@@ -29,6 +29,13 @@ export default function Expenses() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date_desc");
 
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  const monthStr = currentMonth < 10 ? `0${currentMonth}` : `${currentMonth}`;
+  const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+  const minDate = `${currentYear}-${monthStr}-01`;
+  const maxDate = `${currentYear}-${monthStr}-${daysInMonth}`;
+
   const { data: expenses, isLoading } = useQuery<Expense[]>({
     queryKey: ["expenses"],
     queryFn: async () => {
@@ -177,6 +184,8 @@ export default function Expenses() {
                 <Input
                   className="text-lg py-6"
                   type="date"
+                  min={minDate}
+                  max={maxDate}
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   disabled={createExpense.isPending}
