@@ -171,7 +171,7 @@ export default function Dashboard() {
                     dataKey="total"
                     stroke="none"
                   >
-                    {metrics.expenses_by_category.map((entry, index) => (
+                    {metrics.expenses_by_category.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} className="drop-shadow-sm hover:opacity-80 transition-opacity duration-300" />
                     ))}
                   </Pie>

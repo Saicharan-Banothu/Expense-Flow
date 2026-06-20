@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Target, Plus, Trash2, CheckCircle2, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { format } from "date-fns";
 
 interface SavingGoal {
   id: number;
