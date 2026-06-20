@@ -30,6 +30,10 @@ export default function Subscriptions() {
   const [nextBillingDate, setNextBillingDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [categoryId, setCategoryId] = useState("");
 
+  const today = new Date();
+  const minDate = format(new Date(today.getFullYear(), today.getMonth(), 1), "yyyy-MM-dd");
+  const maxDate = format(new Date(today.getFullYear(), today.getMonth() + 1, 0), "yyyy-MM-dd");
+
   const { data: subscriptions, isLoading } = useQuery<Subscription[]>({
     queryKey: ["subscriptions"],
     queryFn: async () => {
@@ -128,6 +132,8 @@ export default function Subscriptions() {
                 <Input
                   type="date"
                   value={nextBillingDate}
+                  min={minDate}
+                  max={maxDate}
                   onChange={(e) => setNextBillingDate(e.target.value)}
                   disabled={createSubscription.isPending}
                 />

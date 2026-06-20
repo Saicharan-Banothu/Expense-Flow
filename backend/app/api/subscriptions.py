@@ -5,6 +5,8 @@ from app.api import deps
 from app.models.budget import Subscription
 from app.models.user import User
 from app.schemas.subscription import Subscription as SubscriptionSchema, SubscriptionCreate, SubscriptionUpdate
+from app.models.expense import Expense
+from datetime import datetime
 
 router = APIRouter()
 
@@ -31,6 +33,9 @@ def create_subscription(
     """
     Create new subscription.
     """
+    if subscription_in.next_billing_date.month != datetime.today().month or subscription_in.next_billing_date.year != datetime.today().year:
+        raise HTTPException(status_code=400, detail="Subscription date must be in the current month.")
+
     subscription = Subscription(
         name=subscription_in.name,
         amount=subscription_in.amount,
@@ -40,6 +45,17 @@ def create_subscription(
         user_id=current_user.id,
     )
     db.add(subscription)
+    
+    # Automatically log it as an expense for the current month
+    expense = Expense(
+        amount=subscription_in.amount,
+        description=f"Subscription: {subscription_in.name}",
+        date=subscription_in.next_billing_date,
+        user_id=current_user.id,
+        category_id=subscription_in.category_id if hasattr(subscription_in, 'category_id') and subscription_in.category_id else None
+    )
+    db.add(expense)
+    
     db.commit()
     db.refresh(subscription)
     return subscription
